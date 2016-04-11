@@ -1,6 +1,6 @@
 # go-kafka-test
 
-Basic example of using Kafaka in Go.
+Basic example of using Kafka in Go.
 
 ## Usage.
 
