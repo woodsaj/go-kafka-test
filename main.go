@@ -68,9 +68,18 @@ func main() {
 	}()
 
 	go produce(producer, stopChan)
+	
+	// Handle notifications. We only need to handle thses if the condumer config has Group.Return.Notifications set to true.
+	// these notifications are emitted everytime a consumer is added/removed from the group resulting in the distribution of
+	// partitions between consumers being re-balanced.
 	go notifications(consumer)
+	
+	// sleep for 10seconds. When we start consuming we should see a burst of 10 messsages being consumed,
+	// then 1 every second after that.
 	time.Sleep(time.Second * 10)
 	go consume(consumer)
+	
+	//wait for CTRL-C
 	<-interrupt
 }
 
@@ -98,6 +107,7 @@ func produce(producer sarama.SyncProducer, stopChan chan struct{}) {
 }
 
 func notifications(consumer *cluster.Consumer) {
+	// get our notifications Channel
 	n := consumer.Notifications()
 	for msg := range n {
 		if len(msg.Claimed) > 0 {
@@ -128,6 +138,7 @@ func consume(consumer *cluster.Consumer) {
 	for msg := range messageChan {
 		log.Printf("recieved message: Topic %s, Partition: %d, Offset: %d\n", msg.Topic, msg.Partition, msg.Offset)
 		log.Printf("message body: %s", string(msg.Value))
+		//Acknowledge that we have handled the message.
 		consumer.MarkOffset(msg, "")
 	}
 	log.Println("consumer ended.")
