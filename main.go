@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var brokers = []string{"192.168.0.110:9092"}
+var brokers = []string{"localhost:9092"}
 var topic = "test"
 
 func newProducer(brokerList []string) sarama.SyncProducer {
