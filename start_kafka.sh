@@ -1,8 +1,8 @@
 #!/bin/bash
-
+set -x
 IP=$(ip addr show dev docker0 scope global |grep inet|awk '{print $2}'|cut -d\/ -f1)
 
-docker run -d --name kafka -p 2181:2181 -p 9092:9202 --env ADVERTISED_HOST=$IP woodsaj/kafka
+docker run -d --name kafka -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=$IP woodsaj/kafka
 
 sleep 10;
 
